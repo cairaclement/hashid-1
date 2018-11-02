@@ -36,7 +36,6 @@ def get_prepared_hash_manager():
     Si l'algorithme MD5 présente un intérêt historique important il est aujourd'hui considéré comme dépassé et absolument 
     impropre à toute utilisation en cryptographie ou en sécurité
     """
-    hash_manager.add_known_hash("MD5", is_md5, md5_description, "md5")
 
     def is_sha1(string):
         return len(string) == 40
@@ -53,6 +52,8 @@ def get_prepared_hash_manager():
     SHA-32,3,4. Microsoft5, Google6 et Mozilla7,8,9 ont annoncé que leurs navigateurs respectifs cesseraient d'accepter les
     certificats SHA-1 au plus tard en 2017. 
     """
+
+    hash_manager.add_known_hash("MD5", is_md5, md5_description, "md5")
     hash_manager.add_known_hash("SHA1", is_sha1, sha1_description, "sha1-gen")
     return hash_manager
 
@@ -97,11 +98,14 @@ else:
             print("here is a piece of information about " + hash_name + ":")
             print(detected_hash["wikipedia"])
         if args.show_john_command:
-            print("execute the following command to try to crack this hash with john the ripper : ")
-            hash_file = Path("hash.txt")
-            if hash_file.is_file():
-                print("    rm hash.txt")
-            print("    echo \"" + args.hashed_string + "\" > hash.txt")
-            print("    john --format=" + detected_hash["john_format"] + " hash.txt")
+            if detected_hash["john_format"] is None:
+                print("Sorry, no john command found for the hash " + hash_name)
+            else:
+                print("execute the following command to try to crack this hash with john the ripper : ")
+                hash_file = Path("hash.txt")
+                if hash_file.is_file():
+                    print("    rm hash.txt")
+                print("    echo \"" + args.hashed_string + "\" > hash.txt")
+                print("    john --format=" + detected_hash["john_format"] + " hash.txt")
     except NotImplementedError:
         print("Sorry, but we couldn't manage to detect the hash function which was used for your input")
