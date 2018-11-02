@@ -3,15 +3,10 @@
 ## setup
 to use this project, run 
 
-    pipenv install
-    pipenv shell
-    
-And in the newly opened shell, 
-
-    python ./hashid.py your_hash_string
+    python3 ./hashid.py your_hash_string
     
 ## prerequisite
-you need to have pipenv installed on your computer
+you need to have python3 installed on your computer
 
 ## what does it do
 It tries to tell you what is the hash of the string you gave. You may pass several
