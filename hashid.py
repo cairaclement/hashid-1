@@ -60,8 +60,8 @@ def get_prepared_hash_manager():
     def is_django_sha384(string):
         return re.compile(r'^sha384\$[a-z0-9]+\$[a-f0-9]{96}$', re.IGNORECASE).match(string)
 
-    # def is_sha224(string):
-    #     return re.compile(r'^[a-f0-9]{56}$', re.IGNORECASE).match(string)
+    def is_redmine(string):
+        return re.compile(r'^[a-f0-9]{40}:[a-f0-9]{0,32}$', re.IGNORECASE).match(string)
 
     md5_description = """
     The MD5 message-digest algorithm is a widely used hash function producing a 128-bit hash value. Although MD5 was 
@@ -238,30 +238,10 @@ def get_prepared_hash_manager():
     and SHA-256 on x86-64 processor architecture, since SHA-512 works on 64-bit instead of 32-bit words.
     """
 
-    # sha224_description = """
-    #     sha 224 is only one hash in the SHA2 family.
-    #
-    #     SHA-2 (Secure Hash Algorithm 2) is a set of cryptographic hash functions designed by the United States National
-    #     Security Agency (NSA). They are built using the Merkle–Damgård structure, from a one-way compression function itself
-    #      built using the Davies–Meyer structure from a (classified) specialized block cipher.
-    #
-    #     Cryptographic hash functions are mathematical operations run on digital data; by comparing the computed "hash" (the
-    #     output from execution of the algorithm) to a known and expected hash value, a person can determine the data's
-    #     integrity. For example, computing the hash of a downloaded file and comparing the result to a previously published
-    #     hash result can show whether the download has been modified or tampered with. A key aspect of cryptographic hash
-    #     functions is their collision resistance: nobody should be able to find two different input values that result in the
-    #     same hash output.
-    #
-    #     SHA-2 includes significant changes from its predecessor, SHA-1. The SHA-2 family consists of six hash functions with
-    #     digests (hash values) that are 224, 256, 384 or 512 bits: SHA-224, SHA-256, SHA-384, SHA-512, SHA-512/224,
-    #     SHA-512/256.
-    #
-    #     SHA-256 and SHA-512, and, to a lesser degree, SHA-224 and SHA-384 are prone to length extension attacks,
-    #     rendering it insecure for some applications. It is thus generally recommended to switch to SHA-3 for 512-bit hashes
-    #     and to use SHA-512/224 and SHA-512/256 instead of SHA-224 and SHA-256. This also happens to be faster than SHA-224
-    #     and SHA-256 on x86-64 processor architecture, since SHA-512 works on 64-bit instead of 32-bit words.
-    #     """
-    #
+    redmine_description = """
+    a hash used internally by redmine, with SHA1 and a salt.
+    """
+
     hash_manager.add_known_hash("MD5", is_md5, md5_description, 'md5')
     hash_manager.add_known_hash("SHA1", is_sha1, sha1_description, 'sha1-gen')
     hash_manager.add_known_hash("SHA224", is_sha224, sha224_description, 'raw-sha224')
@@ -273,7 +253,7 @@ def get_prepared_hash_manager():
     hash_manager.add_known_hash("SHA384", is_sha384, sha384_description, 'raw-sha384')
     hash_manager.add_known_hash("drupal7", is_drupal7, drupal7_description, 'drupal7')
     hash_manager.add_known_hash("django SHA384", is_django_sha384, django_sha384_description, None)
-    # hash_manager.add_known_hash("Adler-32", is_adler_32, adler_32_description, None)
+    hash_manager.add_known_hash("redmine", is_redmine, redmine_description, None)
     return hash_manager
 
 
