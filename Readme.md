@@ -8,7 +8,7 @@ to use this project, run
     
 And in the newly opened shell, 
 
-    ./hashid.py your_hash_string
+    python ./hashid.py your_hash_string
     
 ## prerequisite
 you need to have pipenv installed on your computer
