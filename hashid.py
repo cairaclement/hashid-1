@@ -1,5 +1,6 @@
 import argparse
 from pathlib import Path
+import re
 
 
 class HashesManager:
@@ -29,32 +30,67 @@ def get_prepared_hash_manager():
     def is_md5(string):
         return len(string) == 32
 
-    md5_description = """
-    L'algorithme MD5, pour Message Digest 5, est une fonction de hachage cryptographique qui permet d'obtenir l'empreinte 
-    numérique d'un fichier (on parle souvent de message). Il a été inventé par Ronald Rivest en 1991.
-
-    Si l'algorithme MD5 présente un intérêt historique important il est aujourd'hui considéré comme dépassé et absolument 
-    impropre à toute utilisation en cryptographie ou en sécurité
-    """
-
     def is_sha1(string):
         return len(string) == 40
 
-    sha1_description = """
-    SHA-1 (Secure Hash Algorithm) est une fonction de hachage cryptographique conçue par la National Security Agency des 
-    États-Unis (NSA), et publiée par le gouvernement des États-Unis comme un standard fédéral de traitement de l'information
-     (Federal Information Processing Standard du National Institute of Standards and Technology (NIST)). Elle produit un 
-     résultat (appelé « hash » ou condensat) de 160 bits.
+    def is_sha224(string):
+        return re.compile(r'^[a-f0-9]{56}$', re.IGNORECASE).match(string)
 
-    SHA-1 n'est plus considéré comme sûr contre des adversaires disposant de moyens importants. En 2005, des cryptanalystes
-    ont découvert des attaques sur SHA-1, suggérant que l'algorithme pourrait ne plus être suffisamment sûr pour continuer à
-    l'utiliser dans le futur1. Depuis 2010, de nombreuses organisations ont recommandé son remplacement par SHA-2 ou 
-    SHA-32,3,4. Microsoft5, Google6 et Mozilla7,8,9 ont annoncé que leurs navigateurs respectifs cesseraient d'accepter les
-    certificats SHA-1 au plus tard en 2017. 
+    md5_description = """
+    The MD5 message-digest algorithm is a widely used hash function producing a 128-bit hash value. Although MD5 was 
+    initially designed to be used as a cryptographic hash function, it has been found to suffer from extensive
+    vulnerabilities. It can still be used as a checksum to verify data integrity, but only against unintentional
+    corruption.
+
+    One basic requirement of any cryptographic hash function is that it should be computationally infeasible to find two
+    non-identical messages which hash to the same value. MD5 fails this requirement catastrophically; such collisions 
+    can be found in seconds on an ordinary home computer.
+
+    The weaknesses of MD5 have been exploited in the field, most infamously by the Flame malware in 2012. The CMU 
+    Software Engineering Institute considers MD5 essentially "cryptographically broken and unsuitable for further use".
+    """
+
+    sha1_description = """
+    In cryptography, SHA-1 (Secure Hash Algorithm 1) is a cryptographic hash function which takes an input and produces
+     a 160-bit (20-byte) hash value known as a message digest – typically rendered as a hexadecimal number, 40 digits 
+     long. It was designed by the United States National Security Agency, and is a U.S. Federal Information Processing 
+     Standard.
+
+    Since 2005 SHA-1 has not been considered secure against well-funded opponents, and since 2010 many organizations 
+    have recommended its replacement by SHA-2 or SHA-3. Microsoft, Google, Apple and Mozilla have all announced that 
+    their respective browsers will stop accepting SHA-1 SSL certificates by 2017.
+    
+    In 2017 CWI Amsterdam and Google announced they had performed a collision attack against SHA-1, publishing two 
+    dissimilar PDF files which produced the same SHA-1 hash.
+    """
+
+    sha224_description = """
+    sha 224 is only one hash in the HASH2 family.
+    
+    SHA-2 (Secure Hash Algorithm 2) is a set of cryptographic hash functions designed by the United States National 
+    Security Agency (NSA). They are built using the Merkle–Damgård structure, from a one-way compression function itself
+     built using the Davies–Meyer structure from a (classified) specialized block cipher.
+
+    Cryptographic hash functions are mathematical operations run on digital data; by comparing the computed "hash" (the
+    output from execution of the algorithm) to a known and expected hash value, a person can determine the data's 
+    integrity. For example, computing the hash of a downloaded file and comparing the result to a previously published 
+    hash result can show whether the download has been modified or tampered with. A key aspect of cryptographic hash 
+    functions is their collision resistance: nobody should be able to find two different input values that result in the
+    same hash output.
+    
+    SHA-2 includes significant changes from its predecessor, SHA-1. The SHA-2 family consists of six hash functions with
+    digests (hash values) that are 224, 256, 384 or 512 bits: SHA-224, SHA-256, SHA-384, SHA-512, SHA-512/224, 
+    SHA-512/256. 
+    
+    SHA-256 and SHA-512, and, to a lesser degree, SHA-224 and SHA-384 are prone to length extension attacks,
+    rendering it insecure for some applications. It is thus generally recommended to switch to SHA-3 for 512-bit hashes
+    and to use SHA-512/224 and SHA-512/256 instead of SHA-224 and SHA-256. This also happens to be faster than SHA-224 
+    and SHA-256 on x86-64 processor architecture, since SHA-512 works on 64-bit instead of 32-bit words.
     """
 
     hash_manager.add_known_hash("MD5", is_md5, md5_description, "md5")
     hash_manager.add_known_hash("SHA1", is_sha1, sha1_description, "sha1-gen")
+    hash_manager.add_known_hash("SHA224", is_sha224, sha224_description, "raw-sha224")
     return hash_manager
 
 
