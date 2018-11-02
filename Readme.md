@@ -24,5 +24,18 @@ to try to break the password.
 
 ## advancement (known hashes)
 Currently known hash include :
-- md5
-- sha1
+- MD5
+- SHA1
+- SHA224
+- Adler-32
+- CRC-32
+- MD2
+- bcrypt
+- SHA256
+- SHA384
+- drupal7
+- django 
+- SHA384
+- redmine
+
+yes, we _kinda_ love SHA.
