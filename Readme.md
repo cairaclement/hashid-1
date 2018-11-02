@@ -29,8 +29,7 @@ Currently known hash include :
 - SHA256
 - SHA384
 - drupal7
-- django 
-- SHA384
+- django SHA384
 - redmine
 
 yes, we _kinda_ love SHA.
