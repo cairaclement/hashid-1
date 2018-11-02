@@ -42,9 +42,9 @@ def get_prepared_hash_manager():
     def is_crc_32(string):
         return re.compile(r'^(\$crc32\$[a-f0-9]{8}.)?[a-f0-9]{8}$', re.IGNORECASE).match(string)
 
-    # def is_sha224(string):
-    #     return re.compile(r'^[a-f0-9]{56}$', re.IGNORECASE).match(string)
-    #
+    def is_md2(string):
+        return re.compile(r'^(\$md2\$)?[a-f0-9]{32}$', re.IGNORECASE).match(string)
+
     # def is_sha224(string):
     #     return re.compile(r'^[a-f0-9]{56}$', re.IGNORECASE).match(string)
     #
@@ -140,29 +140,12 @@ def get_prepared_hash_manager():
         CRC 32 is a subset of CRC hash algorithms
         """
 
-    # sha224_description = """
-    #     sha 224 is only one hash in the HASH2 family.
-    #
-    #     SHA-2 (Secure Hash Algorithm 2) is a set of cryptographic hash functions designed by the United States National
-    #     Security Agency (NSA). They are built using the Merkle–Damgård structure, from a one-way compression function itself
-    #      built using the Davies–Meyer structure from a (classified) specialized block cipher.
-    #
-    #     Cryptographic hash functions are mathematical operations run on digital data; by comparing the computed "hash" (the
-    #     output from execution of the algorithm) to a known and expected hash value, a person can determine the data's
-    #     integrity. For example, computing the hash of a downloaded file and comparing the result to a previously published
-    #     hash result can show whether the download has been modified or tampered with. A key aspect of cryptographic hash
-    #     functions is their collision resistance: nobody should be able to find two different input values that result in the
-    #     same hash output.
-    #
-    #     SHA-2 includes significant changes from its predecessor, SHA-1. The SHA-2 family consists of six hash functions with
-    #     digests (hash values) that are 224, 256, 384 or 512 bits: SHA-224, SHA-256, SHA-384, SHA-512, SHA-512/224,
-    #     SHA-512/256.
-    #
-    #     SHA-256 and SHA-512, and, to a lesser degree, SHA-224 and SHA-384 are prone to length extension attacks,
-    #     rendering it insecure for some applications. It is thus generally recommended to switch to SHA-3 for 512-bit hashes
-    #     and to use SHA-512/224 and SHA-512/256 instead of SHA-224 and SHA-256. This also happens to be faster than SHA-224
-    #     and SHA-256 on x86-64 processor architecture, since SHA-512 works on 64-bit instead of 32-bit words.
-    #     """
+    md2_description = """
+        he MD2 Message-Digest Algorithm is a cryptographic hash function developed by Ronald Rivest in 1989. The 
+        algorithm is optimized for 8-bit computers. MD2 is specified in RFC 1319. Although MD2 is no longer considered 
+        secure, even as of 2014, it remains in use in public key infrastructures as part of certificates generated with 
+        MD2 and RSA. The "MD" in MD2 stands for "Message Digest".
+        """
     #
     # sha224_description = """
     #     sha 224 is only one hash in the HASH2 family.
@@ -313,7 +296,7 @@ def get_prepared_hash_manager():
     hash_manager.add_known_hash("SHA224", is_sha224, sha224_description, "raw-sha224")
     hash_manager.add_known_hash("Adler-32", is_adler_32, adler_32_description, None)
     hash_manager.add_known_hash("CRC-32", is_crc_32, crc_32_description, 'crc32')
-    # hash_manager.add_known_hash("Adler-32", is_adler_32, adler_32_description, None)
+    hash_manager.add_known_hash("MD2", is_md2, md2_description, 'md2')
     # hash_manager.add_known_hash("Adler-32", is_adler_32, adler_32_description, None)
     # hash_manager.add_known_hash("Adler-32", is_adler_32, adler_32_description, None)
     # hash_manager.add_known_hash("Adler-32", is_adler_32, adler_32_description, None)
