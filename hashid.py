@@ -28,10 +28,10 @@ def get_prepared_hash_manager():
     hash_manager = HashesManager()
 
     def is_md5(string):
-        return len(string) == 32
+        return re.compile(r'^[a-f0-9]{32}(:.+)?$', re.IGNORECASE).match(string)
 
     def is_sha1(string):
-        return len(string) == 40
+        return re.compile(r'^[a-f0-9]{40}(:.+)?$', re.IGNORECASE).match(string)
 
     def is_sha224(string):
         return re.compile(r'^[a-f0-9]{56}$', re.IGNORECASE).match(string)
@@ -45,9 +45,9 @@ def get_prepared_hash_manager():
     def is_md2(string):
         return re.compile(r'^(\$md2\$)?[a-f0-9]{32}$', re.IGNORECASE).match(string)
 
-    # def is_sha224(string):
-    #     return re.compile(r'^[a-f0-9]{56}$', re.IGNORECASE).match(string)
-    #
+    def is_bcrypt(string):
+        return re.compile(r'^(\$2[axy]|\$2)\$[0-9]{2}\$[a-z0-9\/.]{53}$', re.IGNORECASE).match(string)
+
     # def is_sha224(string):
     #     return re.compile(r'^[a-f0-9]{56}$', re.IGNORECASE).match(string)
     #
@@ -116,37 +116,50 @@ def get_prepared_hash_manager():
     """
 
     adler_32_description = """
-        Adler-32 is a checksum algorithm which was invented by Mark Adler in 1995, and is a modification of the Fletcher
-        checksum. Compared to a cyclic redundancy check of the same length, it trades reliability for speed (preferring 
-        the latter). Adler-32 is more reliable than Fletcher-16, and slightly less reliable than Fletcher-32.
-        """
+    Adler-32 is a checksum algorithm which was invented by Mark Adler in 1995, and is a modification of the Fletcher
+    checksum. Compared to a cyclic redundancy check of the same length, it trades reliability for speed (preferring 
+    the latter). Adler-32 is more reliable than Fletcher-16, and slightly less reliable than Fletcher-32.
+    """
 
     crc_32_description = """
-        A cyclic redundancy check (CRC) is an error-detecting code commonly used in digital networks and storage 
-        devices to detect accidental changes to raw data. Blocks of data entering these systems get a short check value
-        attached, based on the remainder of a polynomial division of their contents. On retrieval, the calculation is 
-        repeated and, in the event the check values do not match, corrective action can be taken against data 
-        corruption. CRCs can be used for error correction (see bitfilters).
+    A cyclic redundancy check (CRC) is an error-detecting code commonly used in digital networks and storage 
+    devices to detect accidental changes to raw data. Blocks of data entering these systems get a short check value
+    attached, based on the remainder of a polynomial division of their contents. On retrieval, the calculation is 
+    repeated and, in the event the check values do not match, corrective action can be taken against data 
+    corruption. CRCs can be used for error correction (see bitfilters).
 
-        CRCs are so called because the check (data verification) value is a redundancy (it expands the message without 
-        adding information) and the algorithm is based on cyclic codes. CRCs are popular because they are simple to 
-        implement in binary hardware, easy to analyze mathematically, and particularly good at detecting common errors 
-        caused by noise in transmission channels. Because the check value has a fixed length, the function that 
-        generates it is occasionally used as a hash function.
-        
-        The CRC was invented by W. Wesley Peterson in 1961; the 32-bit CRC function of Ethernet and many other standards 
-        is the work of several researchers and was published in 1975. 
-        
-        CRC 32 is a subset of CRC hash algorithms
-        """
+    CRCs are so called because the check (data verification) value is a redundancy (it expands the message without 
+    adding information) and the algorithm is based on cyclic codes. CRCs are popular because they are simple to 
+    implement in binary hardware, easy to analyze mathematically, and particularly good at detecting common errors 
+    caused by noise in transmission channels. Because the check value has a fixed length, the function that 
+    generates it is occasionally used as a hash function.
+    
+    The CRC was invented by W. Wesley Peterson in 1961; the 32-bit CRC function of Ethernet and many other standards 
+    is the work of several researchers and was published in 1975. 
+    
+    CRC 32 is a subset of CRC hash algorithms
+    """
 
     md2_description = """
-        he MD2 Message-Digest Algorithm is a cryptographic hash function developed by Ronald Rivest in 1989. The 
-        algorithm is optimized for 8-bit computers. MD2 is specified in RFC 1319. Although MD2 is no longer considered 
-        secure, even as of 2014, it remains in use in public key infrastructures as part of certificates generated with 
-        MD2 and RSA. The "MD" in MD2 stands for "Message Digest".
-        """
-    #
+    he MD2 Message-Digest Algorithm is a cryptographic hash function developed by Ronald Rivest in 1989. The 
+    algorithm is optimized for 8-bit computers. MD2 is specified in RFC 1319. Although MD2 is no longer considered 
+    secure, even as of 2014, it remains in use in public key infrastructures as part of certificates generated with 
+    MD2 and RSA. The "MD" in MD2 stands for "Message Digest".
+    """
+
+    bcrypt_description = """
+    bcrypt is a password hashing function designed by Niels Provos and David Mazières, based on the Blowfish cipher, and 
+    presented at USENIX in 1999. Besides incorporating a salt to protect against rainbow table attacks, bcrypt is an 
+    adaptive function: over time, the iteration count can be increased to make it slower, so it remains resistant to 
+    brute-force search attacks even with increasing computation power.
+
+    The bcrypt function is the default password hash algorithm for OpenBSD and other systems including some Linux 
+    distributions such as SUSE Linux.
+    
+    There are implementations of bcrypt for C, C++, C#, Go, Java, JavaScript, Perl, PHP, Python, Ruby and other 
+    languages. 
+    """
+
     # sha224_description = """
     #     sha 224 is only one hash in the HASH2 family.
     #
@@ -267,37 +280,13 @@ def get_prepared_hash_manager():
     #     and SHA-256 on x86-64 processor architecture, since SHA-512 works on 64-bit instead of 32-bit words.
     #     """
     #
-    # sha224_description = """
-    #     sha 224 is only one hash in the HASH2 family.
-    #
-    #     SHA-2 (Secure Hash Algorithm 2) is a set of cryptographic hash functions designed by the United States National
-    #     Security Agency (NSA). They are built using the Merkle–Damgård structure, from a one-way compression function itself
-    #      built using the Davies–Meyer structure from a (classified) specialized block cipher.
-    #
-    #     Cryptographic hash functions are mathematical operations run on digital data; by comparing the computed "hash" (the
-    #     output from execution of the algorithm) to a known and expected hash value, a person can determine the data's
-    #     integrity. For example, computing the hash of a downloaded file and comparing the result to a previously published
-    #     hash result can show whether the download has been modified or tampered with. A key aspect of cryptographic hash
-    #     functions is their collision resistance: nobody should be able to find two different input values that result in the
-    #     same hash output.
-    #
-    #     SHA-2 includes significant changes from its predecessor, SHA-1. The SHA-2 family consists of six hash functions with
-    #     digests (hash values) that are 224, 256, 384 or 512 bits: SHA-224, SHA-256, SHA-384, SHA-512, SHA-512/224,
-    #     SHA-512/256.
-    #
-    #     SHA-256 and SHA-512, and, to a lesser degree, SHA-224 and SHA-384 are prone to length extension attacks,
-    #     rendering it insecure for some applications. It is thus generally recommended to switch to SHA-3 for 512-bit hashes
-    #     and to use SHA-512/224 and SHA-512/256 instead of SHA-224 and SHA-256. This also happens to be faster than SHA-224
-    #     and SHA-256 on x86-64 processor architecture, since SHA-512 works on 64-bit instead of 32-bit words.
-    #     """
-    #
-    hash_manager.add_known_hash("MD5", is_md5, md5_description, "md5")
-    hash_manager.add_known_hash("SHA1", is_sha1, sha1_description, "sha1-gen")
-    hash_manager.add_known_hash("SHA224", is_sha224, sha224_description, "raw-sha224")
+    hash_manager.add_known_hash("MD5", is_md5, md5_description, 'md5')
+    hash_manager.add_known_hash("SHA1", is_sha1, sha1_description, 'sha1-gen')
+    hash_manager.add_known_hash("SHA224", is_sha224, sha224_description, 'raw-sha224')
     hash_manager.add_known_hash("Adler-32", is_adler_32, adler_32_description, None)
     hash_manager.add_known_hash("CRC-32", is_crc_32, crc_32_description, 'crc32')
     hash_manager.add_known_hash("MD2", is_md2, md2_description, 'md2')
-    # hash_manager.add_known_hash("Adler-32", is_adler_32, adler_32_description, None)
+    hash_manager.add_known_hash("bcrypt", is_bcrypt, bcrypt_description, 'bcrypt')
     # hash_manager.add_known_hash("Adler-32", is_adler_32, adler_32_description, None)
     # hash_manager.add_known_hash("Adler-32", is_adler_32, adler_32_description, None)
     # hash_manager.add_known_hash("Adler-32", is_adler_32, adler_32_description, None)
