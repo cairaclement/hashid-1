@@ -4,7 +4,8 @@ import re
 
 
 class HashesManager:
-    known_hashes = []
+    def __init__(self):
+        self.known_hashes = []
 
     def add_known_hash(self, hash_name, hash_check_func, hash_wikipedia_info, hash_john_format):
         self.known_hashes.append({
